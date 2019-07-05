@@ -9,7 +9,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="/static/js/socket.io.js"></script>
     <script>
-        var socket = io();
+      var socket = io();
     </script>
     <!--  <script src="/static/js/postrequest.js"></script>-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -95,7 +95,7 @@
         <div class="container">
             <div class="row" main-room>
                 <div class="head">
-                    <h5 class="title">Room Header</h5>
+                    <h5 class="title " ttl-id>Room Header</h5>
                     <button class="add-room"><i class="fa fa-save" save-room></i></button>
                     <button class="add-room"><i class="fa fa-edit" edit-room></i></button>
                     <button class="add-room"><i class="fa fa-plus-circle" add-room></i></button>
@@ -111,11 +111,11 @@
                             <button class="add-room" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus-circle" add-item></i></button>
                         </div>
                         <div  panel-item>
-                        <button class="add-room" style="display: block; float:right"><i class="fa fa-sign-out" status-change></i></button>
-                        <div class="item">
-                            <button class="btn" btn-status></button>
-                            <h3 class="txt-name" btn-name></h3>
-                        </div>
+                            <button class="add-room" style="display: block; float:right"><i class="fa fa-sign-out" status-change></i></button>
+                            <div class="item">
+                                <button class="btn" btn-status></button>
+                                <h3 class="txt-name" btn-name></h3>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -142,152 +142,156 @@
         </div>
     </div>
     <script>
-        var rooms = [];
-        var template = $('[main-room]');
-        var roomTemplate = $('[room-header]').clone();
-        console.log(roomTemplate)
-        var penalTemplate = $('[panel-attr]').clone();
-        var penalItemTemplpate = $('[panel-item]').clone();
-        console.log(penalItemTemplpate)
-        $('[panel-attr]').remove();
-        $('[room-header]').remove();
-        penalTemplate.find('[panel-item]').remove();
-        $(document).ready(function (e) {
-
-            $('body').on('click', '[btn-status]' , function () {
-                var status = $(this).parent('.item').find('[btn-status]');
-                if (status[0].innerHTML == "ON") {
-                    status.text("OFF");
-                    status.css('background', 'blue')
-                } else {
-                    status.text("ON");
-                    status.css('background', 'red')
-                }
-            });
-            $.ajax({
-                type: "GET",
-                url: "/api/users/all",
-                success: function (result) {
-                    console.log("result",result)
-                    refreshTable(result);
-                },
-                error: function (e) {
-                    $("#getResultDiv").html("<strong>Error</strong>");
-                    console.log("ERROR: ", e);
-                }
-            });
-            $('body').on('click', '[add-room]', function () {
-                var cloneRoom = roomTemplate.clone();
-                cloneRoom.find('[room-title]').text("IOT");
-                cloneRoom.find('[panel-attr]').remove();
-                template.append(cloneRoom);
-            });
-            $('body').on('click', '[add-panel]', function () {
-                var clonePanel = penalTemplate.clone();
-                clonePanel.find('[panel-title]').text("Switchery");
-                clonePanel.find('panel-item').remove();
-                $('[ room-header]').append(clonePanel);
-
-            });
-            $('body').on('click', '[add-item]' , function () {
-                var panelItem = penalItemTemplpate.clone();
-                panelItem.find('.item').each(function () {
-                    $(this).find('[btn-status]').text('ON');
-                    $(this).find('[btn-name]').text('Fan');
-                });
-                $('[panel-attr]').append(panelItem);
-            });
-            $('body').on('click', '[status-change]', function () {
-                var statuses=[];
-                var item = $(this).parents('[panel-attr]').each(function () {
-                    var _id = $(this).find('[status-change]').attr('status-change');
-                    $(this).find('.item').each(function () {
-                        var status = $(this).find('[btn-status]').text();
-                        if(status == "on"){
-                            status= 'off'
-                            statuses.push(status)
-                        }else{
-                            status ='on'
-                            statuses.push(status)
-                        }
-                    });
-                    data = {
-                        _id: _id,
-                        status: statuses
-                    };
-                    socket.emit("sales:status:change", data, function (response) {
-                        setTimeout(function (e) {
-                            console.log(response)
-                        }, 1000)
-                    }, function (err) {
-                        showNotification("Something went wrong. Please try again later.", "error");
-                    });
-                });
-            });
-            $('[save-room]').click(function () {
-                template.find('[room-header]').each(function () {
-                    var room = {
-                        _id: $(this).find('[room-title]').attr('room-title'),
-                        title: $(this).find('[room-title]').text(),
-                        panel: []
-                    };
-                    $(this).find('[panel-attr]').each(function () {
-                        var panelItems = [];
-                        room.panel.push({
-                            title: $(this).find('[panel-title]').text(),
-                            item: panelItems
-                        });
-                        $(this).find('.item').each(function () {
-                            var item = {
-                                status: $(this).find('[btn-status]').text(),
-                                name: $(this).find('[btn-name]').text()
-                            };
-                            panelItems.push(item)
-                        });
-                    });
-                    rooms.push(room);
-                    var data = {
-                        room: rooms
-                    };
-                    console.log(data);
-                    socket.emit("sales:add:data", data, function (response) {
-                        setTimeout(function (e) {
-                            console.log(response)
-                        }, 1000)
-                    }, function (err) {
-                        showNotification("Something went wrong. Please try again later.", "error");
-                    });
-                });
-            });
+      var rooms = [];
+      var template = $('[main-room]');
+      var roomTemplate = $('[room-header]').clone();
+      var penalTemplate = $('[panel-attr]').clone();
+      var penalItemTemplpate = $('[panel-item]').clone();
+      $('[panel-attr]').remove();
+      $('[room-header]').remove();
+      penalTemplate.find('[panel-item]').remove();
+      $(document).ready(function (e) {
+        $('body').on('click', '[btn-status]' , function () {
+          var status = $(this).parent('.item').find('[btn-status]');
+          if (status[0].innerHTML == "ON") {
+            status.text("OFF");
+            status.css('background', 'blue')
+          } else {
+            status.text("ON");
+            status.css('background', 'red')
+          }
         });
-        function refreshTable(result) {
-            $('[room-header]').html('');
-            for(var i=0; i < result[0].room.length; i++){
-                var entry = result[0].room[i];
-                var entryTamplate = roomTemplate.clone();
-                entryTamplate.find('[panel-attr]').remove();
-                entryTamplate.find('[room-title]').text(entry.title);
-                entryTamplate.find('[room-title]').attr('room-title' , result[0]._id);
-                for(var j=0; j < entry.panel.length; j++) {
-                    var panel = entry.panel[j];
-                    var temp = penalTemplate.clone();
-                    temp.find('[panel-title]').text(panel.title);
-                    temp.find('[status-change]').attr('status-change' , panel._id);
-                    for(var k=0; k < panel.item.length; k++) {
-                        var item = panel.item[k];
-                        var itemTemp = penalItemTemplpate.clone();
-                        itemTemp.find('.item').each( function () {
-                            $(this).find('[btn-status]').text(item.status);
-                            $(this).find('[btn-name]').text(item.name);
-                        });
-                        temp.append(itemTemp);
-                    }
-                    entryTamplate.append(temp);
-                }
-                template.append(entryTamplate);
+        $.ajax({
+          type: "GET",
+          url: "/api/users/all",
+          success: function (result) {
+            console.log("result",result)
+            refreshTable(result);
+          },
+          error: function (e) {
+            $("#getResultDiv").html("<strong>Error</strong>");
+            console.log("ERROR: ", e);
+          }
+        });
+        $('body').on('click', '[add-room]', function () {
+          var cloneRoom = roomTemplate.clone();
+          cloneRoom.find('[room-title]').text("IOT");
+          cloneRoom.find('[panel-attr]').remove();
+          template.append(cloneRoom);
+        });
+        $('body').on('click', '[add-panel]', function () {
+          var clonePanel = penalTemplate.clone();
+          clonePanel.find('[panel-title]').text("Switchery");
+          clonePanel.find('panel-item').remove();
+          $('[ room-header]').append(clonePanel);
+        });
+        $('body').on('click', '[add-item]' , function () {
+          var panelItem = $(this).parents('[panel-attr]');
+          var item = panelItem.clone();
+          panelItem.find('.item').each(function () {
+            $(this).find('[btn-status]').text('ON');
+            $(this).find('[btn-name]').text('Fan');
+          });
+          $('[panel-attr]').append(panelItem);
+        });
+        $('body').on('click', '[status-change]', function () {
+          var statuses=[];
+          var item = $(this).parents('[panel-attr]').each(function () {
+            var _id = $(this).find('[status-change]').attr('status-change');
+            $(this).find('.item').each(function () {
+              var status = $(this).find('[btn-status]').text();
+              if(status == "on"){
+                status= 'off'
+                statuses.push(status)
+              }else{
+                status ='on'
+                statuses.push(status)
+              }
+            });
+            data = {
+              _id: _id,
+              status: statuses
+            };
+            socket.emit("sales:status:change", data, function (response) {
+              setTimeout(function (e) {
+                console.log(response)
+              }, 1000)
+            }, function (err) {
+              showNotification("Something went wrong. Please try again later.", "error");
+            });
+          });
+        });
+        $('[save-room]').click(function () {
+          var id = template.find('[ttl-id]').attr('ttl-id');
+          template.find('[room-header]').each(function () {
+            var room = {
+              _id: $(this).find('[room-title]').attr('room-title'),
+              title: $(this).find('[room-title]').text(),
+              panel: []
+            };
+            $(this).find('[panel-attr]').each(function () {
+              var panelItems = [];
+              room.panel.push({
+                _id: $(this).find('[panel-title]').attr('panel-title'),
+                title: $(this).find('[panel-title]').text(),
+                item: panelItems
+              });
+              $(this).find('.item').each(function () {
+                var item = {
+                  _id: $(this).find('[btn-status]').attr('btn-status'),
+                  status: $(this).find('[btn-status]').text(),
+                  name: $(this).find('[btn-name]').text()
+                };
+                panelItems.push(item)
+              });
+            });
+            rooms.push(room);
+            var data = {
+              _id : id,
+              room: rooms
+            };
+            console.log(data)
+            return
+            socket.emit("sales:add:data", data, function (response) {
+              setTimeout(function (e) {
+                console.log(response)
+              }, 1000)
+            }, function (err) {
+              showNotification("Something went wrong. Please try again later.", "error");
+            });
+          });
+        });
+      });
+      function refreshTable(result) {
+        $('[room-header]').html('');
+        template.find('[ttl-id]').attr('ttl-id',result[0]._id);
+        for(var i=0; i < result[0].room.length; i++){
+          var entry = result[0].room[i];
+          var entryTamplate = roomTemplate.clone();
+          entryTamplate.find('[panel-attr]').remove();
+          entryTamplate.find('[room-title]').text(entry.title);
+          entryTamplate.find('[room-title]').attr('room-title',entry._id);
+          for(var j=0; j < entry.panel.length; j++) {
+            var panel = entry.panel[j];
+            var temp = penalTemplate.clone();
+            temp.find('[panel-title]').text(panel.title);
+            temp.find('[panel-title]').attr('panel-title',panel._id);
+            temp.find('[status-change]').attr('status-change' , panel._id);
+            for(var k=0; k < panel.item.length; k++) {
+              var item = panel.item[k];
+              var itemTemp = penalItemTemplpate.find('.item').clone();
+              itemTemp.each( function () {
+                $(this).find('[btn-status]').attr('btn-status',item._id);
+                $(this).find('[btn-status]').text(item.status);
+                $(this).find('[btn-name]').text(item.name);
+              });
+              temp.append(itemTemp);
             }
+            entryTamplate.append(temp);
+          }
+          template.append(entryTamplate);
         }
-
+      }
     </script>
 </section><!-- /#page -->
 </body>
