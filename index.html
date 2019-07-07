@@ -9,7 +9,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="/static/js/socket.io.js"></script>
     <script>
-      var socket = io();
+        var socket = io();
     </script>
     <!--  <script src="/static/js/postrequest.js"></script>-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -18,6 +18,7 @@
             width: 100%;
             height: auto;
         }
+
         .wrapper-385 .head {
             display: flex;
             justify-content: space-between;
@@ -25,48 +26,56 @@
             border-bottom: 1px solid #c7c7c7;
             width: 100%;
         }
+
         .wrapper-385 .header-room {
             width: 100%;
             background: #f7f7f7;
             border: #c7c7c7;
             border: 1px solid #c7c7c7;
         }
+
         .wrapper-385 .header-room .head {
             display: flex;
             justify-content: space-between;
             padding: 0.5rem;
             border-bottom: 1px solid #c7c7c7;
         }
+
         .wrapper-385 .header-room .title {
             font-size: 20px;
             color: #333;
             text-align: left;
             float: left;
         }
+
         .wrapper-385 .header-room .add-room i {
             font-size: 20px;
             color: #333;
             text-align: right;
             float: right;
         }
+
         .wrapper-385 .header-room .panel-header .head-p {
             display: flex;
             justify-content: space-between;
             padding: 0.5rem;
             border-bottom: 1px solid #c7c7c7;
         }
+
         .wrapper-385 .header-room .panel-header .head-p .title {
             font-size: 20px;
             color: #333;
             text-align: left;
             float: left;
         }
+
         .wrapper-385 .header-room .panel-header .head-p .add-room i {
             font-size: 20px;
             color: #333;
             text-align: right;
             float: right;
         }
+
         .wrapper-385 .header-room .panel-header .item {
             width: 20%;
             height: auto;
@@ -74,12 +83,14 @@
             text-align: center;
             padding: 2rem 0;
         }
+
         .wrapper-385 .header-room .panel-header .item .txt-name {
             font-size: 20px;
             color: #333;
             text-align: center;
             margin-top: 1rem;
         }
+
         .wrapper-385 .header-room .panel-header .item .btn {
             background: burlywood;
             height: 100px;
@@ -108,10 +119,13 @@
                     <div class="panel-header" panel-attr>
                         <div class="head-p">
                             <h5 class="title" panel-title></h5>
-                            <button class="add-room" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus-circle" add-item></i></button>
+                            <button class="add-room" data-toggle="modal" data-target="#myModal"><i
+                                    class="fa fa-plus-circle" add-item></i></button>
+                            <button class="add-room" delete-item><i
+                                    class="fa fa-remove"></i></button>
                         </div>
-                        <div  panel-item>
-                            <button class="add-room" style="display: block; float:right"><i class="fa fa-sign-out" status-change></i></button>
+                        <div panel-item>
+                            <button class="add-room" style="display: block; float:right" status-change>ON</button>
                             <div class="item">
                                 <button class="btn" btn-status></button>
                                 <h3 class="txt-name" btn-name></h3>
@@ -122,176 +136,247 @@
             </div>
         </div>
     </section>
-    <div id="myModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+    <!--    <div id="myModal" class="modal fade" role="dialog">-->
+    <!--        <div class="modal-dialog">-->
 
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Modal Header</h4>
-                </div>
-                <div class="modal-body">
-                    <p>Some text in the modal.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
+    <!--            &lt;!&ndash; Modal content&ndash;&gt;-->
+    <!--            <div class="modal-content">-->
+    <!--                <div class="modal-header">-->
+    <!--                    <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+    <!--                    <h4 class="modal-title">please enter input number of Item</h4>-->
+    <!--                </div>-->
+    <!--                <div class="modal-body">-->
+    <!--                    <form id="input">-->
+    <!--                        <input type="number" input-number maxlength="4">-->
+    <!--                    </form>-->
+    <!--                </div>-->
+    <!--                <div class="modal-footer">-->
+    <!--                    <button type="submit" class="btn btn-default" data-submit data-dismiss="modal">Submit</button>-->
+    <!--                </div>-->
+    <!--            </div>-->
 
-        </div>
-    </div>
+    <!--        </div>-->
+    <!--    </div>-->
     <script>
-      var rooms = [];
-      var template = $('[main-room]');
-      var roomTemplate = $('[room-header]').clone();
-      var penalTemplate = $('[panel-attr]').clone();
-      var penalItemTemplpate = $('[panel-item]').clone();
-      $('[panel-attr]').remove();
-      $('[room-header]').remove();
-      penalTemplate.find('[panel-item]').remove();
-      $(document).ready(function (e) {
-        $('body').on('click', '[btn-status]' , function () {
-          var status = $(this).parent('.item').find('[btn-status]');
-          if (status[0].innerHTML == "ON") {
-            status.text("OFF");
-            status.css('background', 'blue')
-          } else {
-            status.text("ON");
-            status.css('background', 'red')
-          }
-        });
-        $.ajax({
-          type: "GET",
-          url: "/api/users/all",
-          success: function (result) {
-            console.log("result",result)
-            refreshTable(result);
-          },
-          error: function (e) {
-            $("#getResultDiv").html("<strong>Error</strong>");
-            console.log("ERROR: ", e);
-          }
-        });
+        var rooms = [];
+        var template = $('[main-room]');
+        var roomTemplate = $('[room-header]').clone();
+        var penalTemplate = $('[panel-attr]').clone();
+        var penalItemTemplpate = $('[panel-item]').clone();
+        var data = penalItemTemplpate.find('.item').clone();
+        penalItemTemplpate.remove();
+        $('[panel-attr]').remove();
+        $('[room-header]').remove();
+        penalTemplate.find('[panel-item]').remove();
+        penalTemplate.find('.item').remove();
         $('body').on('click', '[add-room]', function () {
-          var cloneRoom = roomTemplate.clone();
-          cloneRoom.find('[room-title]').text("IOT");
-          cloneRoom.find('[panel-attr]').remove();
-          template.append(cloneRoom);
+            var cloneRoom = roomTemplate.clone();
+            cloneRoom.find('[room-title]').text("IOT");
+            cloneRoom.find('[panel-attr]').remove();
+            template.append(cloneRoom);
         });
         $('body').on('click', '[add-panel]', function () {
-          var clonePanel = penalTemplate.clone();
-          clonePanel.find('[panel-title]').text("Switchery");
-          clonePanel.find('panel-item').remove();
-          $('[ room-header]').append(clonePanel);
+            var datatemp = $(this).parents('[ room-header]');
+            var clonePanel = penalTemplate.clone();
+            clonePanel.find('[panel-title]').text("Switchery");
+            datatemp.append(clonePanel);
         });
-        $('body').on('click', '[add-item]' , function () {
-          var panelItem = $(this).parents('[panel-attr]');
-          var item = panelItem.clone();
-          panelItem.find('.item').each(function () {
-            $(this).find('[btn-status]').text('ON');
-            $(this).find('[btn-name]').text('Fan');
-          });
-          $('[panel-attr]').append(panelItem);
+        $('body').on('click', '[delete-item]', function () {
+            var deleteItem = $(this).parents('[panel-attr]');
+            deleteItem.find('.item').remove();
         });
-        $('body').on('click', '[status-change]', function () {
-          var statuses=[];
-          var item = $(this).parents('[panel-attr]').each(function () {
-            var _id = $(this).find('[status-change]').attr('status-change');
-            $(this).find('.item').each(function () {
-              var status = $(this).find('[btn-status]').text();
-              if(status == "on"){
-                status= 'off'
-                statuses.push(status)
-              }else{
-                status ='on'
-                statuses.push(status)
-              }
-            });
-            data = {
-              _id: _id,
-              status: statuses
-            };
-            socket.emit("sales:status:change", data, function (response) {
-              setTimeout(function (e) {
-                console.log(response)
-              }, 1000)
-            }, function (err) {
-              showNotification("Something went wrong. Please try again later.", "error");
-            });
-          });
-        });
-        $('[save-room]').click(function () {
-          var id = template.find('[ttl-id]').attr('ttl-id');
-          template.find('[room-header]').each(function () {
-            var room = {
-              _id: $(this).find('[room-title]').attr('room-title'),
-              title: $(this).find('[room-title]').text(),
-              panel: []
-            };
-            $(this).find('[panel-attr]').each(function () {
-              var panelItems = [];
-              room.panel.push({
-                _id: $(this).find('[panel-title]').attr('panel-title'),
-                title: $(this).find('[panel-title]').text(),
-                item: panelItems
-              });
-              $(this).find('.item').each(function () {
-                var item = {
-                  _id: $(this).find('[btn-status]').attr('btn-status'),
-                  status: $(this).find('[btn-status]').text(),
-                  name: $(this).find('[btn-name]').text()
-                };
-                panelItems.push(item)
-              });
-            });
-            rooms.push(room);
-            var data = {
-              _id : id,
-              room: rooms
-            };
-            console.log(data)
-            return
-            socket.emit("sales:add:data", data, function (response) {
-              setTimeout(function (e) {
-                console.log(response)
-              }, 1000)
-            }, function (err) {
-              showNotification("Something went wrong. Please try again later.", "error");
-            });
-          });
-        });
-      });
-      function refreshTable(result) {
-        $('[room-header]').html('');
-        template.find('[ttl-id]').attr('ttl-id',result[0]._id);
-        for(var i=0; i < result[0].room.length; i++){
-          var entry = result[0].room[i];
-          var entryTamplate = roomTemplate.clone();
-          entryTamplate.find('[panel-attr]').remove();
-          entryTamplate.find('[room-title]').text(entry.title);
-          entryTamplate.find('[room-title]').attr('room-title',entry._id);
-          for(var j=0; j < entry.panel.length; j++) {
-            var panel = entry.panel[j];
-            var temp = penalTemplate.clone();
-            temp.find('[panel-title]').text(panel.title);
-            temp.find('[panel-title]').attr('panel-title',panel._id);
-            temp.find('[status-change]').attr('status-change' , panel._id);
-            for(var k=0; k < panel.item.length; k++) {
-              var item = panel.item[k];
-              var itemTemp = penalItemTemplpate.find('.item').clone();
-              itemTemp.each( function () {
-                $(this).find('[btn-status]').attr('btn-status',item._id);
-                $(this).find('[btn-status]').text(item.status);
-                $(this).find('[btn-name]').text(item.name);
-              });
-              temp.append(itemTemp);
+        var dataItem = [{
+            status: "ON",
+            name: "FAN"
+        },
+            {
+                status: "ON",
+                name: "RAHUL"
+            },
+            {
+                status: "ON",
+                name: "NIRAV"
+            },
+            {
+                status: "ON",
+                name: "JATIN"
+            }];
+        $("body").on('click', '[add-item]', function (e) {
+            e.preventDefault();
+            var cloneItem = penalItemTemplpate.clone();
+            cloneItem.find('.item').remove()
+            var panelItem = $(this).parents('[panel-attr]');
+            for (var v = 0; v < dataItem.length; v++) {
+                var data1 = data.clone();
+                console.log(dataItem[v].name);
+                data1.find('[btn-status]').text(dataItem[v].status);
+                data1.find('[btn-name]').text(dataItem[v].name);
+                cloneItem.append(data1);
             }
-            entryTamplate.append(temp);
-          }
-          template.append(entryTamplate);
+            panelItem.append(cloneItem);
+        });
+        $(document).ready(function (e) {
+            $('body').on('click', '[btn-status]', function () {
+                var status = $(this).parent('.item').find('[btn-status]');
+                if (status[0].innerHTML == "ON") {
+                    status.text("OFF");
+                    status.css('background', 'blue')
+                } else {
+                    status.text("ON");
+                    status.css('background', 'red')
+                }
+            });
+
+            $('body').on('click', '[status-change]', function () {
+                var SVal = $(this).text();
+                if(SVal == "ON"){
+                    $(this).text('OFF')
+                }else {
+                    $(this).text('ON')
+                }
+                var chng =  $(this).text();
+                var status = $(this).parents('[panel-attr]').find('.item');
+                 status.each(function () {
+                     console.log("clicked")
+                     if( chng == "OFF") {
+                         console.log("on")
+                         status.find('[btn-status]').text("ON");
+                     }else {
+                         console.log("off")
+                         status.find('[btn-status]').text("OFF");
+                     }
+                });
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "/api/users/all",
+                success: function (result) {
+                    console.log("result", result)
+                    refreshTable(result);
+                },
+                error: function (e) {
+                    $("#getResultDiv").html("<strong>Error</strong>");
+                    console.log("ERROR: ", e);
+                }
+            });
+            // $("body").on('click' , '[data-submit]',function(e) {
+            //     e.preventDefault();
+            //     var value = $('#myModal').find('[input-number]').val();
+            //     console.log(value)
+            // });
+
+            // $('body').on('click', '[status-change]', function () {
+            //     var statuses = [];
+            //     var item = $(this).parents('[panel-attr]').each(function () {
+            //         var _id = $(this).find('[status-change]').attr('status-change');
+            //         $(this).find('.item').each(function () {
+            //             var status = $(this).find('[btn-status]').text();
+            //             if (status == "on") {
+            //                 status = 'off'
+            //                 statuses.push(status)
+            //             } else {
+            //                 status = 'on'
+            //                 statuses.push(status)
+            //             }
+            //         });
+            //         data = {
+            //             _id: _id,
+            //             status: statuses
+            //         };
+            //         socket.emit("sales:status:change", data, function (response) {
+            //             setTimeout(function (e) {
+            //                 console.log(response)
+            //             }, 1000)
+            //         }, function (err) {
+            //             showNotification("Something went wrong. Please try again later.", "error");
+            //         });
+            //     });
+            // });
+            $('[save-room]').click(function () {
+               refresh();
+            });
+        });
+
+        function refreshTable(result) {
+            $('[room-header]').html('');
+            template.find('[ttl-id]').attr('ttl-id', result[0]._id);
+            for (var i = 0; i < result[0].room.length; i++) {
+                var entry = result[0].room[i];
+                var entryTamplate = roomTemplate.clone();
+                entryTamplate.find('[panel-attr]').remove();
+                entryTamplate.find('[room-title]').text(entry.title);
+                entryTamplate.find('[room-title]').attr('room-title', entry._id);
+                for (var j = 0; j < entry.panel.length; j++) {
+                    var panel = entry.panel[j];
+                    var temp = penalTemplate.clone();
+                    temp.find('[panel-title]').text(panel.title);
+                    // temp.find('[panel-title]').attr('panel-title',panel._id);
+                    temp.find('[status-change]').attr('status-change', panel._id);
+                    for (var k = 0; k < panel.item.length; k++) {
+                        var item = panel.item[k];
+                        var itemTemp = penalItemTemplpate.find('.item').clone();
+                        itemTemp.each(function () {
+                            // $(this).find('[btn-status]').attr('btn-status',item._id);
+                            $(this).find('[btn-status]').text(item.status);
+                            $(this).find('[btn-name]').text(item.name);
+                        });
+                        temp.append(itemTemp);
+                    }
+                    entryTamplate.append(temp);
+                }
+                template.append(entryTamplate);
+            }
         }
-      }
+        function refresh() {
+            var id = template.find('[ttl-id]').attr('ttl-id');
+            template.find('[room-header]').each(function () {
+                var room = {
+                    // _id: $(this).find('[room-title]').attr('room-title'),
+                    title: $(this).find('[room-title]').text(),
+                    panel: []
+                };
+                $(this).find('[panel-attr]').each(function () {
+                    var panelItems = [];
+                    room.panel.push({
+                        // _id: $(this).find('[panel-title]').attr('panel-title'),
+                        title: $(this).find('[panel-title]').text(),
+                        item: panelItems
+                    });
+                    $(this).find('.item').each(function () {
+                        var item = {
+                            // _id: $(this).find('[btn-status]').attr('btn-status'),
+                            status: $(this).find('[btn-status]').text(),
+                            name: $(this).find('[btn-name]').text()
+                        };
+                        panelItems.push(item)
+                    });
+                });
+                rooms.push(room);
+                var data = {
+                    Rid: "",
+                    room: rooms
+                };
+                console.log(rooms);
+                if (data.Rid != null) {
+                    socket.emit("sales:update:data", data, function (response) {
+                        setTimeout(function (e) {
+                            console.log(response)
+                        }, 1000)
+                    }, function (err) {
+                        showNotification("Something went wrong. Please try again later.", "error");
+                    });
+                } else {
+                    socket.emit("sales:add:data", data, function (response) {
+                        setTimeout(function (e) {
+                            console.log(response)
+                        }, 1000)
+                    }, function (err) {
+                        showNotification("Something went wrong. Please try again later.", "error");
+                    });
+                }
+            });
+        }
     </script>
 </section><!-- /#page -->
 </body>
